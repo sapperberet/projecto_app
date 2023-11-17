@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "364611238805",
+    "project_id": "garbage-team-test",
+    "storage_bucket": "garbage-team-test.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:364611238805:android:2bf5368153bd6212ef149c",
+        "android_client_info": {
+          "package_name": "com.example.projecto_app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyChB_DTGNs-ghOFpMx-9IvRvHnhvCG50dg"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
