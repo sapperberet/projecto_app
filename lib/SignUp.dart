@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:projecto_app/MainPage.dart';
 
 class SignUp extends StatefulWidget {
   const SignUp({super.key});
@@ -24,7 +26,7 @@ class _SignUpState extends State<SignUp> {
   }
 
   void _submitForm() async {
-    if (_formKey.currentState!.validate()) {
+    if (_formKey.currentState?.validate() ?? false) {
       // Perform the Firebase authentication here
 
       // Example: Creating a user with FirebaseAuth
@@ -35,13 +37,21 @@ class _SignUpState extends State<SignUp> {
           password: passwordController.text.trim(),
         );
         // Handle the successful creation of the user account
-        print('User created: ${userCredential.user.uid}');
-      } catch (e) {
+        print('User created: ${userCredential.user?.uid}');
+        Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => MainPage(),
+            ),
+        );
+            } catch (e) {
         // Handle errors during user creation
         print('Error creating user: $e');
       }
     }
   }
+  String? selectedGender ;
+  List<String> genderOptions = ['Male', 'Female', 'Ahmed Mostafa'];
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -97,35 +107,51 @@ class _SignUpState extends State<SignUp> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text(
-                            'Email',
-                            style: TextStyle(fontSize: 16.0),
-                          ),
+                          // Text(
+                          //   'Email',
+                          //   style: TextStyle(fontSize: 16.0),
+                          // ),
                           TextFormField(
                             controller: emailController,
+
                             keyboardType: TextInputType.emailAddress,
                             validator: (value) {
-                              if (value.isEmpty || !value.contains('@')) {
+                              if (value?.isEmpty ?? true || !value!.contains('@') ?? false) {
                                 return 'Please enter a valid email address';
                               }
                               return null;
                             },
+                            decoration: InputDecoration(
+                              labelText: "Email",
+                              border: OutlineInputBorder(),
+                              // suffixIcon: IconButton(
+                              //   icon: Icon(
+                              //     isPasswordVisible
+                              //         ? Icons.visibility
+                              //         : Icons.visibility_off,
+                              //   ),
+                              //   onPressed: _togglePasswordVisibility,
+                              // ),
+                            ),
                           ),
                           SizedBox(height: 16.0),
-                          Text(
-                            'Password',
-                            style: TextStyle(fontSize: 16.0),
-                          ),
+                          // Text(
+                          //   'Password',
+                          //   style: TextStyle(fontSize: 16.0),
+                          // ),
                           TextFormField(
+
                             controller: passwordController,
                             obscureText: !isPasswordVisible,
                             validator: (value) {
-                              if (value.isEmpty || value.length < 6) {
+                              if (value?.isEmpty ?? true || (value?.length ?? 0)  < 6) {
                                 return 'Password must be at least 6 characters long';
                               }
                               return null;
                             },
                             decoration: InputDecoration(
+                              labelText: "Password",
+                              border: OutlineInputBorder(),
                               suffixIcon: IconButton(
                                 icon: Icon(
                                   isPasswordVisible
@@ -137,44 +163,86 @@ class _SignUpState extends State<SignUp> {
                             ),
                           ),
                           SizedBox(height: 16.0),
-                          Text(
-                            'Age',
-                            style: TextStyle(fontSize: 16.0),
-                          ),
+                          // Text(
+                          //   'Age',
+                          //   style: TextStyle(fontSize: 16.0),
+                          // ),
                           TextFormField(
                             controller: ageController,
                             keyboardType: TextInputType.number,
                             validator: (value) {
-                              if (value.isEmpty || int.tryParse(value) == null) {
-                                return 'Please enter a valid age';
+                              int? age = int.tryParse(value!);
+                              if (age == null || age < 1 || age > 130) {
+                                return 'Please enter a valid age between 1 and 130';
                               }
+
                               return null;
                             },
+                            decoration: InputDecoration(
+                              labelText: "Age",
+                              border: OutlineInputBorder(),
+                              // suffixIcon: IconButton(
+                              //   icon: Icon(
+                              //     isPasswordVisible
+                              //         ? Icons.visibility
+                              //         : Icons.visibility_off,
+                              //   ),
+                              //   onPressed: _togglePasswordVisibility,
+                              // ),
+                            ),
                           ),
                           SizedBox(height: 16.0),
-                          Text(
-                            'Gender',
-                            style: TextStyle(fontSize: 16.0),
-                          ),
-                          DropdownButton<String>(
-                            value: gender,
-                            onChanged: (value) {
-                              setState(() {
-                                gender = value;
-                              });
-                            },
-                            items: ['Male', 'Female']
-                                .map<DropdownMenuItem<String>>((String value) {
-                              return DropdownMenuItem<String>(
-                                value: value,
-                                child: Text(value),
-                              );
-                            }).toList(),
+
+                          Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Text(
+                                'Select Gender:',
+                                style: TextStyle(fontSize: 16),
+                              ),
+                              SizedBox(height: 8),
+                              Container(
+                                padding: EdgeInsets.symmetric(horizontal: 16),
+                                decoration: BoxDecoration(
+                                  border: Border.all(),
+                                  borderRadius: BorderRadius.circular(8),
+                                ),
+                                child: DropdownButton<String>(
+                                  value: selectedGender,
+                                  icon: Icon(Icons.arrow_drop_down),
+                                  iconSize: 24,
+                                  elevation: 16,
+                                  style: TextStyle(color: Colors.black),
+                                  underline: Container(
+                                    height: 2,
+                                    color: Colors.deepPurpleAccent,
+                                  ),
+                                  onChanged: (String? newValue) {
+                                    setState(() {
+                                      selectedGender = newValue;
+                                    });
+                                  },
+                                  items: genderOptions.map<DropdownMenuItem<String>>((String value) {
+                                    return DropdownMenuItem<String>(
+                                      value: value,
+                                      child: Text(value),
+                                    );
+                                  }).toList(),
+                                ),
+                              ),
+                              SizedBox(height: 16),
+                              Text(
+                                'Selected Gender: $selectedGender',
+                                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                              ),
+                            ],
                           ),
                           SizedBox(height: 24.0),
-                          RaisedButton(
-                            onPressed: _submitForm,
-                            child: Text('Submit'),
+                          Center(
+                            child: ElevatedButton(
+                              onPressed: _submitForm,
+                              child: Text('Submit'),
+                            ),
                           ),
                         ],
                       ),
